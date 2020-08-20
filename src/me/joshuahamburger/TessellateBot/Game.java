@@ -11,6 +11,7 @@ public class Game {
     public int level = 1;
     int width = 9;
     int height = 6;
+    String txt ="";
 
     public Game(User user) {
         this.user = user;
@@ -41,30 +42,29 @@ public class Game {
             channel.sendMessage("Thanks for playing, " + user.getAsMention() + "!").queue();
             gameActive = false;
         }
-
+        
+        
+        
         if (userInput.equals("play") && !gameActive) {
             newGame(channel);
         } else if (gameActive) {
-            if (!grid.hasWon()) {
                 String direction = userInput;
                 if (direction.equals("up") || direction.equals("w")) {
-                    grid.getPlayer().moveUp();
+                	txt = "up";
                 } else if (direction.equals("down") || direction.equals("s")) {
-                    grid.getPlayer().moveDown();
+                	txt = "down";
                 } else if (direction.equals("left") || direction.equals("a")) {
-                    grid.getPlayer().moveLeft();
+                	txt = "left";
                 } else if (direction.equals("right") || direction.equals("d")) {
-                    grid.getPlayer().moveRight();
+                	txt = "right";
                 } else if (direction.equals("r")) {
-                    grid.reset();
+                	txt = "r";
                 }
-                if (!grid.hasWon()) {
                     TextChannel textChannel = Main.getJDA().getTextChannelById(channelID);
                     if (textChannel != null) {
-                        textChannel.retrieveMessageById(gameMessageID).queue(gameMessage -> Commands.updateGameEmbed(gameMessage, String.valueOf(level), grid.toString(), user));
+                        textChannel.retrieveMessageById(gameMessageID).queue(gameMessage -> Commands.updateGameEmbed(gameMessage, String.valueOf(level), txt, user));
                     }
-                }
-            }
+            /*
             if (grid.hasWon()) {
                 level += 1;
                 if (width < 13) {
@@ -80,6 +80,7 @@ public class Game {
                 }
                 grid = new Grid(width, height, level, playerEmote);
             }
+            */
         }
     }
 }
