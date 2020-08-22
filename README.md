@@ -1,4 +1,4 @@
-#Wrap Bot
+# Wrap Bot
 
 This is a discord bot that allows users to play a custom puzzle game called "Wrap"
 
