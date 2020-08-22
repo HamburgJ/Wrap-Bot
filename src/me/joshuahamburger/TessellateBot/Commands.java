@@ -10,11 +10,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.util.*;
 
 public class Commands extends ListenerAdapter {
+	
     HashMap<Long, Game> games = new HashMap<>();
     ArrayList<String> commandsPrefix = new ArrayList<>(Arrays.asList("play", "continue", "stop"));
     ArrayList<String> commandsNoPrefix = new ArrayList<>(Arrays.asList("w", "a", "s", "d", "up", "left", "down",
             "right", "r"));
-
+    
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         User user = event.getAuthor();
@@ -26,11 +27,12 @@ public class Commands extends ListenerAdapter {
             if (embeds.size() > 0) {
                 MessageEmbed embed = embeds.get(0);
                 if (embed.getTitle() != null && embed.getTitle().length() > 0) {
-                    if (embed.getTitle().startsWith("Sokobot | Level ")) {
+                    if (embed.getTitle().startsWith("Sokobot | Level")) {
                         message.addReaction("U+2B05").queue();
                         message.addReaction("U+27A1").queue();
                         message.addReaction("U+2B06").queue();
                         message.addReaction("U+2B07").queue();
+                        message.addReaction("U+21A9").queue();
                         message.addReaction("U+1F504").queue();
                         MessageEmbed.Footer footerObject = embed.getFooter();
                         if (footerObject != null) {
@@ -133,8 +135,11 @@ public class Commands extends ListenerAdapter {
                         userInput = "down";
                         break;
                     case "RE:U+1f504":
-                        userInput = "r";
+                        userInput = "reset";
                         break;
+                    case "RE:U+21a9":
+                    	userInput = "undo";
+                    	break;
                     default:
                         reactionCommand = false;
                         break;
@@ -167,28 +172,28 @@ public class Commands extends ListenerAdapter {
         return info;
     }
 
-    public static void sendGameEmbed(MessageChannel channel, String level, String game, User user) {
+    public static void sendGameEmbed(MessageChannel channel, String game, User user) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Sokobot | Level " + level);
+        embed.setTitle("Sokobot | Level ");
         embed.setDescription(game);
         embed.addField("Enter direction (``up``, ``down``, ``left``, ``right``/``wasd``) or ``r`` to reset", "", false);
         embed.setFooter("Game of " + user.getAsMention(), user.getAvatarUrl());
         channel.sendMessage(embed.build()).queue();
     }
 
-    public static void updateGameEmbed(Message message, String level, String game, User user) {
+    public static void updateGameEmbed(Message message, String game, User user) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Sokobot | Level " + level);
+        embed.setTitle("Sokobot | Level ");
         embed.setDescription(game);
         embed.addField("Enter direction (``up``, ``down``, ``left``, ``right``/``wasd``) or ``r`` to reset", "", false);
         embed.setFooter("Game of " + user.getAsMention(), user.getAvatarUrl());
         message.editMessage(embed.build()).queue();
     }
 
-    public static void sendWinEmbed(Guild guild, Message message, String level) {
+    public static void sendWinEmbed(Guild guild, Message message) {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Sokobot | You win!");
-        embed.setDescription("Type ``" + Main.prefix + "continue`` to continue to Level " + level + " or ``" + Main.prefix + "stop`` to quit ");
+        embed.setDescription("Type ``" + Main.prefix + "continue`` to continue to Level " + " or ``" + Main.prefix + "stop`` to quit ");
         embed.setFooter("You can also press any reaction to continue.");
         message.editMessage(embed.build()).queue();
     }
