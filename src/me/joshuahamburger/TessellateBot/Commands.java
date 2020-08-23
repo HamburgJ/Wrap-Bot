@@ -11,10 +11,8 @@ import java.util.*;
 
 public class Commands extends ListenerAdapter {
 	
-    HashMap<Long, Game> games = new HashMap<>();
+    HashMap<String, Game> games = new HashMap<>();
     ArrayList<String> commandsPrefix = new ArrayList<>(Arrays.asList("play", "continue", "stop"));
-    ArrayList<String> commandsNoPrefix = new ArrayList<>(Arrays.asList("w", "a", "s", "d", "up", "left", "down",
-            "right", "r"));
     
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
@@ -27,7 +25,7 @@ public class Commands extends ListenerAdapter {
             if (embeds.size() > 0) {
                 MessageEmbed embed = embeds.get(0);
                 if (embed.getTitle() != null && embed.getTitle().length() > 0) {
-                    if (embed.getTitle().startsWith("Sokobot | Level")) {
+                    if (embed.getTitle().startsWith("Level")) {
                         message.addReaction("U+2B05").queue();
                         message.addReaction("U+27A1").queue();
                         message.addReaction("U+2B06").queue();
@@ -38,7 +36,7 @@ public class Commands extends ListenerAdapter {
                         if (footerObject != null) {
                             String footer = footerObject.getText();
                             if (footer != null) {
-                                long playerId = Long.parseLong(footer.substring(10, footer.length() - 1));
+                                String playerId = footer.substring(8, footer.length());
                                 if (games.containsKey(playerId)) {
                                     Game game = games.get(playerId);
                                     game.setGameMessage(message);
@@ -53,20 +51,20 @@ public class Commands extends ListenerAdapter {
         String[] args = message.getContentRaw().split("\\s+");
         if (args.length > 0) {
             String arg = args[0].toLowerCase();
-            if (((commandsNoPrefix.contains(arg)) || (arg.length() > 0 && Character.toString(arg.charAt(0)).equals(Main.prefix) && commandsPrefix.contains(arg.substring(1))))) {
+            if (((arg.length() > 0 && Character.toString(arg.charAt(0)).equals(Main.prefix) && commandsPrefix.contains(arg.substring(1))))) {
                 if (!hasPermissions(guild, channel)) {
                     sendInvalidPermissionsMessage(user, channel);
                     return;
                 }
                 Game game;
-                if (!games.containsKey(user.getIdLong())) {
+                if (!games.containsKey(user.getAsTag())) {
                     game = new Game(user);
-                    games.put(user.getIdLong(), game);
-                } else game = games.get(user.getIdLong());
+                    games.put(user.getAsTag(), game);
+                } else game = games.get(user.getAsTag());
                 String userInput = arg;
                 if (userInput.substring(0, 1).equals(Main.prefix)) userInput = userInput.substring(1);
                 game.run(event.getGuild(), channel, userInput);
-                if (userInput.equals("stop")) games.remove(user.getIdLong());
+                if (userInput.equals("stop")) games.remove(user.getAsTag());
                 if (guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE)) message.delete().queue();
             } else if ((arg.equals(Main.prefix + "info")) || (message.getMentionedUsers().size() > 0 && message.getMentionedUsers().get(0).equals(event.getJDA().getSelfUser()))) {
                 if (!hasPermissions(guild, channel)) {
@@ -115,10 +113,10 @@ public class Commands extends ListenerAdapter {
         channel.retrieveMessageById(event.getMessageId()).queue(message -> {
             if (message.getAuthor().getId().equals(event.getJDA().getSelfUser().getId())) {
                 Game game;
-                if (!games.containsKey(user.getIdLong())) {
+                if (!games.containsKey(user.getAsTag())) {
                     game = new Game(user);
-                    games.put(user.getIdLong(), game);
-                } else game = games.get(user.getIdLong());
+                    games.put(user.getAsTag(), game);
+                } else game = games.get(user.getAsTag());
                 boolean reactionCommand = true;
                 String userInput = "";
                 switch (event.getReactionEmote().toString()) {
@@ -152,48 +150,47 @@ public class Commands extends ListenerAdapter {
 
     EmbedBuilder info(Guild guild) {
         EmbedBuilder info = new EmbedBuilder();
-        info.setTitle("Sokobot");
+        info.setTitle("Wrap Bot");
         info.setThumbnail(guild.getSelfMember().getUser().getAvatarUrl());
-        info.setDescription("Sokobot is a bot that lets you play Sokoban, the classic box-pushing puzzle game.");
-        info.setColor(0xdd2e53);
-        info.addField("How to Play", "You are a **Sokoban** :flushed:.\nYour job is to push **boxes** :brown_square: "
-                + "on top of their **destinations** :negative_squared_cross_mark:.", false);
-        info.addField("Features", ":white_small_square:**Infinite levels**\nThe maps in Sokobot are randomly " +
-                "generated, increasing in difficulty as you progress.\n:white_small_square:**Varied " + "controls" +
-                "**\nSokobot has multiple control options to improve the player's experience, including " +
-                "reactions and wasd commands!\n:white_small_square:**Simultaneous games**\nThanks to the power of " + "Java HashMaps:tm:, multiple users can use the bot at the same time without interfering with one " + "another.\n:white_small_square:**Custom prefixes**\nTo prevent Sokobot from conflicting with other " + "bots, admins can choose any single-character prefix to preface Sokobot's commands.", false);
+        info.setDescription("Wrap bot is a bot that lets you play the puzzle game Wrap.");
+        info.setColor(0xd5bc6c);
+        info.addField("Instructions", "You play as :sauropod:\n"
+        		+ "You move around with :arrow_left:, :arrow_right:, :arrow_up:, and :arrow_down:.\n"
+                + "You can use :leftwards_arrow_with_hook: to undo and :arrows_counterclockwise: to reset.\n"
+        		+ "Your goal is to fill in every block in the map, and then return to the starting.\n"
+                + "You can teleport across the level by moving over the edge.\n"
+        		+ "Be careful though, you can't walk over your own trail!\n"
+                + "Although you can walk over the starting tile.", false);
         info.addField("Commands",
-                ("``" + Main.prefix + "play`` can be used to start a game if you are not " + "currently in " + "one.\n``" + Main.prefix + "stop`` can be used to stop your active game at any " + "time.\n``" + Main.prefix + "info`` provides some useful details about the bot and " + "rules of " + "the game.\n``" + Main.prefix + "prefix [character]`` can be used to " + "change the prefix the " + "bot responds to."), false);
+                "``" + Main.prefix + "play`` can be used to start a game if you are not " + "currently in " + "one.\n``" + Main.prefix + "stop`` can be used to stop your active game at any " + "time.\n``" + Main.prefix + "info`` provides some useful details about the bot and " + "rules of the game", false);
         info.addField("Add to your server",
-                "https://top.gg/bot/713635251703906336\nSokobot is currently in " + Main.getJDA().getGuilds().size() + " servers.", false);
-        info.addField("Source code", "https://github.com/PolyMarsDev/Sokobot", false);
-        info.setFooter("created by PolyMars", "https://avatars0.githubusercontent" + ".com/u/51007356?s=460&u" +
-                "=4eb8fd498421a2eee9781edfbadf654386cf06c7&v=4");
+        			  "https://top.gg/bot/713635251703906336", false);
+        info.setFooter("created by HamburgJ", "https://avatars1.githubusercontent.com/u/68581670?s=460&u=88d50cf11f2147662a814d00cae10c9f38728720&v=4");
         return info;
     }
 
     public static void sendGameEmbed(MessageChannel channel, String game, User user) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Sokobot | Level ");
+        embed.setTitle("Level");
         embed.setDescription(game);
-        embed.addField("Enter direction (``up``, ``down``, ``left``, ``right``/``wasd``) or ``r`` to reset", "", false);
-        embed.setFooter("Game of " + user.getAsMention(), user.getAvatarUrl());
+        embed.addField("", ":arrow_left:, :arrow_right:, :arrow_up:, :arrow_down: to move\n" + ":leftwards_arrow_with_hook: to undo\n" +":arrows_counterclockwise: to reset", false);
+        embed.setFooter("Player: " + user.getAsTag(), user.getAvatarUrl());
         channel.sendMessage(embed.build()).queue();
     }
 
     public static void updateGameEmbed(Message message, String game, User user) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Sokobot | Level ");
+        embed.setTitle("Level");
         embed.setDescription(game);
-        embed.addField("Enter direction (``up``, ``down``, ``left``, ``right``/``wasd``) or ``r`` to reset", "", false);
-        embed.setFooter("Game of " + user.getAsMention(), user.getAvatarUrl());
+        embed.addField("", ":arrow_left:, :arrow_right:, :arrow_up:, :arrow_down: to move\n" + ":leftwards_arrow_with_hook: to undo\n" +":arrows_counterclockwise: to reset", false);
+        embed.setFooter("Player: " + user.getAsTag(), user.getAvatarUrl());
         message.editMessage(embed.build()).queue();
     }
 
     public static void sendWinEmbed(Guild guild, Message message) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Sokobot | You win!");
-        embed.setDescription("Type ``" + Main.prefix + "continue`` to continue to Level " + " or ``" + Main.prefix + "stop`` to quit ");
+        embed.setTitle("You win!");
+        embed.setDescription("Type ``" + Main.prefix + "continue`` to continue" + " or ``" + Main.prefix + "stop`` to quit ");
         embed.setFooter("You can also press any reaction to continue.");
         message.editMessage(embed.build()).queue();
     }

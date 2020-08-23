@@ -7,7 +7,7 @@ public class Level {
 	int playerY;
 	int size;
 	String wallId = ":orange_square:";
-	String emptyId = ":blue_square:";
+	String emptyId = ":black_large_square:";
 	String playerId = ":sauropod:";
 	String trailId = ":yellow_square:";
 	String goalId = ":green_square:";
@@ -37,11 +37,12 @@ public class Level {
 	private Boolean checkWin() {
 		for (int i = 0; i<grid.length; i++) {
 			for(int j = 0; j<grid[i].length; j++) {
-				if (grid[i][j] != emptyId) {
+				if (grid[i][j] == emptyId) {
 					return false;
 				}
 			}
 		} 
+		System.out.println("win!");
 		return true;
 	}
 	
@@ -71,7 +72,7 @@ public class Level {
 			playerY = (playerY + difY + size) % size;
 			
 			currentMove++;
-			
+
 			if (nextSpace == goalId) {
 				hasWon = checkWin();
 			}

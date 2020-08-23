@@ -36,6 +36,50 @@ public class Game {
         lvl.addWalls(new int[][] {{2,2}, {0,2}});
         levels.add(lvl);
         
+        lvl = new Level(9, 4, 4);
+        lvl.addWalls(new int[][] {{1,4}, {7,4},
+        						  {0,0},{0,1},{0,2},{1,0},
+        						  {0,8},{0,7},{1,8},{0,6},
+        						  {8,0},{7,0},{8,1},{8,2},
+        						  {8,8},{8,7},{7,8},{8,6}});
+        levels.add(lvl);
+        
+        lvl = new Level(7, 3, 3);
+        lvl.addWalls(new int[][] {{0,0},{1,2},
+        						  {0,6},{4,1},
+        						  {6,0},{2,5},
+        						  {6,6},{5,4}});
+        levels.add(lvl);
+        
+        lvl = new Level(7, 3, 3);
+        lvl.addWalls(new int[][] {{0,1},{0,3},{0,5},
+        						  {6,1},{6,3},{6,5},
+        						  {2,2},{2,4},{4,2},{4,4}});
+        levels.add(lvl);
+        
+        lvl = new Level(7, 3, 3);
+        lvl.addWalls(new int[][] {{1,2},{1,5},{1,6},
+        						  {5,0},{5,1},{5,4}});
+        levels.add(lvl);
+        
+        lvl = new Level(7, 3, 3);
+        lvl.addWalls(new int[][] {{3,0},{3,1},
+        						  {3,5},{3,6},
+        						  {1,3},{2,3},
+        						  {4,3},{5,3}});
+        levels.add(lvl);
+        
+        lvl = new Level(7, 3, 3);
+        lvl.addWalls(new int[][] {{1,1},{1,5},
+        						  {5,1},{5,5},
+        						  {0,3},{3,0},
+        						  {6,3},{3,6}});
+        levels.add(lvl);
+        
+        lvl = new Level(6, 1, 1);
+        lvl.addWalls(new int[][] {{0,0},{0,5},{5,0},
+        						  {2,2},{3,3},{4,4}});
+        levels.add(lvl);
     }
 
     public void setGameMessage(Message gameMessage) {
@@ -47,7 +91,7 @@ public class Game {
     public void newGame(MessageChannel channel) {
         if (!gameActive) {
             gameActive = true;
-            currentLevel = levels.get(2);//levels.get((int) Math.round(Math.random()*(levels.size()-1)));
+            currentLevel = levels.get(0);//levels.get((int) Math.round(Math.random()*(levels.size()-1)));
             Commands.sendGameEmbed(channel, currentLevel.getString(), user);
             
         }
