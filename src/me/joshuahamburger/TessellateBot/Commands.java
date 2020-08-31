@@ -194,4 +194,12 @@ public class Commands extends ListenerAdapter {
         embed.setFooter("You can also press any reaction to continue.");
         message.editMessage(embed.build()).queue();
     }
+    
+    public static void sendWinAllEmbed(Guild guild, Message message) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("You beat all levels!");
+        embed.setDescription("Type ``" + Main.prefix + "continue`` to play again" + " or ``" + Main.prefix + "stop`` to quit ");
+        embed.setFooter("You can also press any reaction to play again.");
+        message.editMessage(embed.build()).queue();
+    }
 }

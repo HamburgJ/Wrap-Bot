@@ -15,10 +15,26 @@ public class Game {
     public boolean gameActive = false;
     Level lvl;
     Level currentLevel;
-    ArrayList<Level> levels = new ArrayList<>();
+    int levelIndex = 0;
+    ArrayList<Level> levels;
 
     public Game(User user) {
         this.user = user;
+    }
+
+    public void setGameMessage(Message gameMessage) {
+        // To avoid an Unknown Message error, we will store the IDs and retrieve the Channel object when needed.
+        gameMessageID = gameMessage.getIdLong();
+        channelID = gameMessage.getChannel().getIdLong();
+    }
+
+    private void setUpLevels() {
+        levels = new ArrayList<>();
+        
+        lvl = new Level(3, 1, 1);
+        lvl.addWalls(new int[][] {{2,2}, {0,2}});
+        levels.add(lvl);
+        
         lvl = new Level(7, 3, 3);
         lvl.addWalls(new int[][] {{1,1},{1,2},{2,1},{2,2},
 			  					  {4,1},{4,2},{5,1},{5,2},
@@ -30,10 +46,6 @@ public class Game {
         						  {0,7},{0,8},{1,8},{6,2},
         						  {7,0},{8,0},{8,1},{2,6},
         						  {8,8},{7,8},{8,7},{6,6}});
-        levels.add(lvl);
-        
-        lvl = new Level(3, 1, 1);
-        lvl.addWalls(new int[][] {{2,2}, {0,2}});
         levels.add(lvl);
         
         lvl = new Level(9, 4, 4);
@@ -80,20 +92,20 @@ public class Game {
         lvl.addWalls(new int[][] {{0,0},{0,5},{5,0},
         						  {2,2},{3,3},{4,4}});
         levels.add(lvl);
+        
+        lvl = new Level(3, 1, 1);
+        lvl.addWalls(new int[][] {{2,2}, {0,2}});
+        levels.add(lvl);
     }
-
-    public void setGameMessage(Message gameMessage) {
-        // To avoid an Unknown Message error, we will store the IDs and retrieve the Channel object when needed.
-        gameMessageID = gameMessage.getIdLong();
-        channelID = gameMessage.getChannel().getIdLong();
-    }
-
+    
     public void newGame(MessageChannel channel) {
         if (!gameActive) {
             gameActive = true;
-            currentLevel = levels.get(0);//levels.get((int) Math.round(Math.random()*(levels.size()-1)));
-            Commands.sendGameEmbed(channel, currentLevel.getString(), user);
+            setUpLevels();
             
+            currentLevel = levels.get(0);
+            Commands.sendGameEmbed(channel, currentLevel.getString(), user);
+         
         }
     }
 
@@ -102,8 +114,6 @@ public class Game {
             channel.sendMessage("Thanks for playing, " + user.getAsMention() + "!").queue();
             gameActive = false;
         }
-        
-        
         
         if (userInput.equals("play") && !gameActive) {
             newGame(channel);
@@ -122,18 +132,29 @@ public class Game {
             } else if (direction.equals("undo")) {
             	currentLevel.undo();
             }
-            
+
             TextChannel textChannel = Main.getJDA().getTextChannelById(channelID);
             if (textChannel != null) {
                 textChannel.retrieveMessageById(gameMessageID).queue(gameMessage -> Commands.updateGameEmbed(gameMessage, currentLevel.getString(), user));
             }
             if (currentLevel.hasWon()) {
-                
                 if (textChannel != null) {
-                    textChannel.retrieveMessageById(gameMessageID).queue(gameMessage -> Commands.sendWinEmbed(guild,
-                            gameMessage));
+                	if (levels.size() == levelIndex+1) {
+                		textChannel.retrieveMessageById(gameMessageID).queue(gameMessage -> Commands.sendWinAllEmbed(guild,
+                				gameMessage));
+                	} else {
+                		textChannel.retrieveMessageById(gameMessageID).queue(gameMessage -> Commands.sendWinEmbed(guild,
+                				gameMessage));
+                	}
                 }
-                currentLevel = levels.get((int) Math.round(Math.random()*(levels.size()-1)));
+                if (levels.size() == levelIndex+1) {
+                	levelIndex = 0;
+                	setUpLevels();
+                	currentLevel = levels.get(levelIndex);
+                } else {
+                	levelIndex++;
+                	currentLevel = levels.get(levelIndex);
+                }
             }
         }
     }

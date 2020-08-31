@@ -7,7 +7,7 @@ public class Level {
 	int playerY;
 	int size;
 	String wallId = ":orange_square:";
-	String emptyId = ":black_large_square:";
+	String emptyId = ":black_medium_square:";
 	String playerId = ":sauropod:";
 	String trailId = ":yellow_square:";
 	String goalId = ":green_square:";
@@ -42,7 +42,6 @@ public class Level {
 				}
 			}
 		} 
-		System.out.println("win!");
 		return true;
 	}
 	
