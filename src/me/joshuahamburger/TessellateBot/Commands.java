@@ -157,10 +157,10 @@ public class Commands extends ListenerAdapter {
         info.addField("Instructions", "You play as :sauropod:\n"
         		+ "You move around with :arrow_left:, :arrow_right:, :arrow_up:, and :arrow_down:.\n"
                 + "You can use :leftwards_arrow_with_hook: to undo and :arrows_counterclockwise: to reset.\n"
-        		+ "Your goal is to fill in every block in the map, and then return to the starting.\n"
+        		+ "Your goal is to fill in every tile in the map, and then return to the starting tile.\n"
                 + "You can teleport across the level by moving over the edge.\n"
         		+ "Be careful though, you can't walk over your own trail!\n"
-                + "Although you can walk over the starting tile.", false);
+                + "Although you can walk over the starting tile multiple times.", false);
         info.addField("Commands",
                 "``" + Main.prefix + "play`` can be used to start a game if you are not " + "currently in " + "one.\n``" + Main.prefix + "stop`` can be used to stop your active game at any " + "time.\n``" + Main.prefix + "info`` provides some useful details about the bot and " + "rules of the game", false);
         info.addField("Add to your server",
